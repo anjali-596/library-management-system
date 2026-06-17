@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for appearance (Your Brown/Tailwind Aesthetic) */
+        body {
+            font-family: 'Cinzel', sans-serif;
+            background-color: #f7f9fb;
+            background: linear-gradient(#3d251e, #4c3228, #5b3e31, #6a4a3a, #765341, #8b6c5c, #a08679, #bca89f, #d8cbc4);
+        }
+        h1{
+            font-family: 'Croisan', Times, serif;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+        .form-card {
+            background-color: rgb(220, 191, 185);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+            background: radial-gradient(#a7816e,rgb(220,191,185));
+        }
+        
+        .input-group label {
+            font-weight: 500;
+            color: #2c1b0b;
+        }
+        .btn-primary {
+            background: #6a4a3a;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-primary:hover {
+            background: #e5a046;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(105, 48, 4, 0.4);
+        }
+        .flash-success {
+            background-color: #d1fae5; 
+            color: #065f46; 
+            border-left: 4px solid #10b981; 
+        }
+        .flash-error {
+            background-color: #fee2e2; 
+            color: #991b1b; 
+            border-left: 4px solid #ef4444; 
+        }
+        .flash-info {
+            background-color: #e0f2f1; 
+            color: #0f766e; 
+            border-left: 4px solid #14b8a6; 
+        }
+        .console {
+            white-space: pre-wrap;
+            min-height: 200px;
+            background-color: #3a1205; 
+            color: #f1baa2; 
+            font-family: 'times new roman', 'Monospace';
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        .view-btn {
+            background-color: #6a4a3a; 
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.15s;
+        }
+        .view-btn:hover {
+            background-color: #c09968; 
+        }
+        /* Custom class for input/select elements */
+        .form-control {
+            width: 100%; 
+            padding: 0.5rem 0.75rem; 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.375rem; 
+            --tw-ring-opacity: 1;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="container mx-auto">
+        <br>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6 text-center" style="font-weight: 200; color: #d8cbc4; font-size: 40px;">Library Management System</h1>
+        <Br>
+
+        <div class="mb-6 space-y-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="p-3 rounded-lg text-sm {{ 'flash-' + category if category != 'message' else 'flash-info' }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <div class="lg:col-span-2 space-y-6">
+
+                <div id="add-book" class="form-card p-6">
+                    <h2 class="text-xl font-bold text-gray-700 mb-4" style="color: #2c1b0b;">Add New Book (Book Details, Physical/Ebook)</h2>
+                    <form action="{{ url_for('handle_form') }}" method="post" class="space-y-4">
+                        <input type="hidden" name="action" value="add_book">
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="input-group">
+                                <label for="book_id" class="block mb-1">Book ID</label>
+                                <input type="text" id="book_id" name="book_id" required class="form-control" placeholder="Ex. SH001">
+                            </div>
+                            <div class="input-group">
+                                <label for="book_quantity" class="block mb-1">Quantity</label>
+                                <input type="number" id="book_quantity" name="book_quantity" required min="1" class="form-control" placeholder="Enter a number">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="book_name" class="block mb-1">Book Name</label>
+                            <input type="text" id="book_name" name="book_name" required class="form-control" placeholder="Ex. Atomic Habits">
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="input-group">
+                                <label for="author" class="block mb-1">Author</label>
+                                <input type="text" id="author" name="author" class="form-control" placeholder="Ex. James Clear">
+                            </div>
+                            <div class="input-group">
+                                <label for="isbn" class="block mb-1">ISBN</label>
+                                <input type="text" id="isbn" name="isbn" class="form-control" placeholder="Ex. 9780743273565">
+                            </div>
+                            <div class="input-group">
+                                <label for="pub_year" class="block mb-1">Publication Year</label>
+                                <input type="number" id="pub_year" name="pub_year" class="form-control" min="1000" max="2099" placeholder="Ex. 2018">
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-400">
+
+                        <div class="input-group">
+                            <label for="book_type" class="block mb-1">Book Type (PhysicalBook/Ebook)</label>
+                            <select id="book_type" name="book_type" required class="form-control" onchange="toggleBookTypeFields()">
+                                <option value="Physical">Physical Book</option>
+                                <option value="Ebook">Ebook</option>
+                            </select>
+                        </div>
+                        
+                        <div id="physical_fields" class="input-group">
+                            <label for="location" class="block mb-1">Shelf Location</label>
+                            <input type="text" id="location" name="location" class="form-control" placeholder="Ex. Aisle B-3, Shelf 5">
+                        </div>
+
+                        <div id="ebook_fields" class="input-group hidden">
+                            <label for="file_size" class="block mb-1">File Size (MB)</label>
+                            <input type="number" id="file_size" name="file_size" class="form-control" placeholder="Ex. 2.5">
+                        </div>
+                        
+                        <button type="submit" class="btn-primary w-full text-white py-2 rounded-md font-semibold">Add Book</button>
+                    </form>
+                </div>
+                
+                <div id="add-user" class="form-card p-6">
+                    <h2 class="text-xl font-bold text-gray-700 mb-4" style="color: #2c1b0b;">Add New User (Patron/Librarian)</h2>
+                    <form action="{{ url_for('handle_form') }}" method="post" class="space-y-4">
+                        <input type="hidden" name="action" value="add_user">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="input-group">
+                                <label for="user_id" class="block mb-1">User ID</label>
+                                <input type="text" id="user_id" name="user_id" required class="form-control" placeholder="Ex: U1001">
+                            </div>
+                            <div class="input-group">
+                                <label for="user_type" class="block mb-1">User Type (Patron/Librarian)</label>
+                                <select id="user_type" name="user_type" required class="form-control">
+                                    <option value="Patron">Patron</option>
+                                    <option value="Librarian">Librarian</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="user_name" class="block mb-1">User Name</label>
+                            <input type="text" id="user_name" name="user_name" required class="form-control" placeholder="Enter your username">
+                        </div>
+                        <button type="submit" class="btn-primary w-full text-white py-2 rounded-md font-semibold">Add User</button>
+                    </form>
+                </div>
+
+                <div id="borrow-book" class="form-card p-6">
+                    <h2 class="text-xl font-bold text-gray-700 mb-4" style="color: #2c1b0b;">Borrow a Book</h2>
+                    <form action="{{ url_for('handle_form') }}" method="post" class="space-y-4">
+                        <input type="hidden" name="action" value="borrow_book">
+                        <div class="input-group">
+                            <label for="borrow_user_name" class="block mb-1">User Name</label>
+                            <input type="text" id="borrow_user_name" name="user_name" required class="form-control" placeholder="Enter your username">
+                        </div>
+                        <div class="input-group">
+                            <label for="borrow_book_name" class="block mb-1">Book Name</label>
+                            <input type="text" id="borrow_book_name" name="book_name" required class="form-control" placeholder="Ex: Atomic habits">
+                        </div>
+                        <button type="submit" class="btn-primary w-full text-white py-2 rounded-md font-semibold">Borrow Book</button>
+                    </form>
+                </div>
+
+                <div id="return-book" class="form-card p-6">
+                    <h2 class="text-xl font-bold text-gray-700 mb-4" style="color: #2c1b0b;">Return a Book</h2>
+                    <form action="{{ url_for('handle_form') }}" method="post" class="space-y-4">
+                        <input type="hidden" name="action" value="return_book">
+                        <div class="input-group">
+                            <label for="return_user_name" class="block mb-1">User Name</label>
+                            <input type="text" id="return_user_name" name="user_name" required class="form-control" placeholder="Enter your username">
+                        </div>
+                        <div class="input-group">
+                            <label for="return_book_name" class="block mb-1">Book Name</label>
+                            <input type="text" id="return_book_name" name="book_name" required class="form-control" placeholder="Ex: Moby Dick">
+                        </div>
+                        <button type="submit" class="btn-primary w-full text-white py-2 rounded-md font-semibold">Return Book</button>
+                    </form>
+                </div>
+                
+                <div id="search-books" class="form-card p-6">
+                    <h2 class="text-xl font-bold text-gray-700 mb-4" style="color: #2c1b0b;">Search Book by Prefix</h2>
+                    <form action="{{ url_for('handle_form') }}" method="post" class="space-y-4">
+                        <input type="hidden" name="action" value="search_books">
+                        <div class="input-group">
+                            <label for="query" class="block mb-1">Search Query (Prefix)</label>
+                            <input type="text" id="query" name="query" required class="form-control">
+                        </div>
+                        <button type="submit" class="btn-primary w-full text-white py-2 rounded-md font-semibold">Search</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="form-card p-6">
+                    <h2 class="text-xl font-bold text-gray-700 mb-4" style="color: #2c1b0b;">View Data Operations</h2>
+                    <div class="space-y-3">
+                        <a href="{{ url_for('index', view='all_books') }}" class="view-btn w-full block" id="print-books">Retrieve All Books (Full Details)</a>
+                        <a href="{{ url_for('index', view='borrowed_users') }}" class="view-btn w-full block" id="print-borrowers">Retrieve Users (Borrowed)</a>
+                        <a href="{{ url_for('index', view='all_users') }}" class="view-btn w-full block" id="print-all-users">Retrieve All Users (Full Details)</a>
+                    </div>
+                </div>
+
+                <div class="form-card p-6">
+                    <h2 class="text-xl font-bold text-gray-700 mb-4" style="color: #2c1b0b;">Console Output</h2>
+                    <div class="console">
+                        {% if console_output %}
+                            {{ console_output }}
+                        {% else %}
+                            Application ready. Use the forms or view buttons to interact with the library system.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to toggle Physical/Ebook specific fields
+        function toggleBookTypeFields() {
+            const bookType = document.getElementById('book_type').value;
+            const physicalFields = document.getElementById('physical_fields');
+            const ebookFields = document.getElementById('ebook_fields');
+
+            if (bookType === 'Physical') {
+                physicalFields.classList.remove('hidden');
+                ebookFields.classList.add('hidden');
+                // Make required fields conditionally required
+                document.getElementById('location').setAttribute('required', 'required');
+                document.getElementById('file_size').removeAttribute('required');
+            } else if (bookType === 'Ebook') {
+                physicalFields.classList.add('hidden');
+                ebookFields.classList.remove('hidden');
+                // Make required fields conditionally required
+                document.getElementById('location').removeAttribute('required');
+                document.getElementById('file_size').setAttribute('required', 'required');
+            }
+        }
+
+        // Initialize the toggle on page load
+        document.addEventListener('DOMContentLoaded', toggleBookTypeFields);
+    </script>
+</body>
+<footer>
+    <br>
+    <hr style="height: 50px;">
+
+</footer>
+</html>
